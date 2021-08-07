@@ -1,13 +1,17 @@
 require('dotenv').config()
 
-const express = require('express')
-const app = express()
+const express = require('express');
+const connectDB = require("./config/db");
+
+const userRoutes = require('./routes/userRoutes');
+
+const app = express();
 const port = process.env.PORT || 3000
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+connectDB();
+
+app.use('/api/users', userRoutes);
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Server running at http://localhost:${port}`)
 })
