@@ -31,6 +31,32 @@ const userSchema = new mongoose.Schema({
 		trim: true,
 		required: true,
 		maxLength: 10
+	},
+	addr: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	tambon_name: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	amphur_name: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	province_name: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	post_code: {
+		type: String,
+		trim: true,
+		required: true,
+		maxLength: 5
 	}
 });
 
