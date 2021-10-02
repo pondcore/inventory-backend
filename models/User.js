@@ -1,4 +1,33 @@
 const mongoose = require("mongoose");
+const addrSchema = new mongoose.Schema({
+	description: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	tambon_name: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	amphur_name: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	province_name: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	zip_code: {
+		type: String,
+		trim: true,
+		required: true,
+		maxLength: 5
+	}
+});
+
 
 const userSchema = new mongoose.Schema({
 	username: {
@@ -32,11 +61,6 @@ const userSchema = new mongoose.Schema({
 		required: true,
 		maxLength: 10
 	},
-	addr: {
-		type: String,
-		trim: true,
-		required: true
-	},
 	tambon_name: {
 		type: String,
 		trim: true,
@@ -57,7 +81,8 @@ const userSchema = new mongoose.Schema({
 		trim: true,
 		required: true,
 		maxLength: 5
-	}
+	},
+	addr: [addrSchema]
 });
 
 const User = mongoose.model("user", userSchema);
