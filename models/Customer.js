@@ -21,7 +21,7 @@ const addrSchema = new mongoose.Schema({
 		trim: true,
 		required: true
 	},
-	post_code: {
+	zip_code: {
 		type: String,
 		trim: true,
 		required: true,
