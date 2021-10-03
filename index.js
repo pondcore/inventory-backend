@@ -21,6 +21,10 @@ app.use(express.urlencoded({
 }))
 app.use(cors())
 
+app.use('/hello', (req, res) => {
+    res.send("<h2>Hello World.</h2>");
+})
+
 app.use('/api/customer', customerRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/order', orderRoutes);
@@ -38,3 +42,4 @@ app.use(function (err, req, res, next) {
     if (!err.statusCode) err.statusCode = 500;
     res.status(err.statusCode).send(err.message);
 })
+
