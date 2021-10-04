@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-const hashedPassword = await bcrypt.hash("1234567890", 12)
+const hashedPassword = async () => await bcrypt.hash("1234567890", 12)
 
 const users = [
 	{
