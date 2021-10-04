@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema({
 		unique: true,
 		required: true
 	},
-		customer_addr_id: {
+	customer_addr_id: {
 		type: String,
 		required: true
 	},
@@ -16,48 +16,48 @@ const orderSchema = new mongoose.Schema({
 		trim: true,
 		required: false
 	},
-      product_id: {
+	product_id: {
 		type: Number,
 		trim: true,
 		required: true
 	},
 	total_cost: {
-		type:Number,
+		type: Number,
 		trim: true,
 		required: true
 	},
 	total_weight: {
-		type:Number,
+		type: Number,
 		trim: true,
 		required: true,
-	
-    },
-    shipping_cost: {
-        type: Number,
+
+	},
+	shipping_cost: {
+		type: Number,
 		trim: true,
 		required: true,
-	
-    },
-    total_price: {
-		type:Number,
+
+	},
+	total_price: {
+		type: Number,
 		trim: true,
 		required: true,
-	
-    },
-    payment_status: {
-		type:Number,
+
+	},
+	payment_status: {
+		type: Number,
 		trim: true,
 		required: true,
-	
-    },
-    timestamp: {
-		type:Date,
+
+	},
+	timestamp: {
+		type: Date,
 		trim: true,
 		required: true,
-	
-    }
+
+	}
 });
 
-const Product = mongoose.model("product", productSchema);
+const Order = mongoose.model("product", orderSchema);
 
-module.exports = Product;
+module.exports = Order;
