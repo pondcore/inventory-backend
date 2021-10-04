@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 
 const userRoutes = require('./routes/userRoutes');
 const customerRoutes = require('./routes/customerRoutes');
+const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
 
@@ -27,6 +28,7 @@ app.use('/hello', (req, res) => {
 })
 
 app.use('/api/customer', customerRoutes);
+app.use('/api/product', productRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/order', orderRoutes);
 

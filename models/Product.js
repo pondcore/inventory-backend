@@ -9,35 +9,34 @@ const productSchema = new mongoose.Schema({
 	},
 	sku: {
 		type: String,
+		unique: true,
 		required: true
 	},
 	price: {
 		type: Number,
-		trim: true,
-		required: false
+		required: true
 	},
-      qty: {
+	qty: {
 		type: Number,
-		trim: true,
 		required: true
 	},
 	weight: {
-		type:Number,
-		trim: true,
+		type: Number,
 		required: true
 	},
 	cost: {
-		type:Number,
-		trim: true,
+		type: Number,
 		required: true,
-	
-    },
-    vat: {
-        type: Number,
-		trim: true,
+	},
+	vat: {
+		type: Number,
 		required: true,
-	
-	}
+	},
+	image: {
+		type: String,
+		trim: true,
+		required: true
+	},
 });
 
 const Product = mongoose.model("product", productSchema);

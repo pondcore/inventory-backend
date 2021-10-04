@@ -1,4 +1,4 @@
-const users = [
+const customers = [
 	{
 		prefix: 'นาย',
 		firstname: "customer1",
@@ -66,4 +66,4 @@ const users = [
 	},
 ];
 
-module.exports = users;
+module.exports = customers;

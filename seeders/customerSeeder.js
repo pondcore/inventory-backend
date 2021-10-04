@@ -8,11 +8,11 @@ const customerSeeder = async () => {
         await Customer.deleteMany({});
         await Customer.insertMany(customerData);
 
-        console.log("User data Import Success");
+        console.log("Customer data Import Success");
 
         process.exit();
     } catch (error) {
-        console.error("Error User data import");
+        console.error("Error Customer data import");
         process.exit(1);
     }
 }
