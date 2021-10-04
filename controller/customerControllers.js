@@ -7,8 +7,9 @@ const index = async (req, res) => {
 		data.forEach(customer => {
 			customer.addr.forEach((addr, index) => {
 				result.push({
+					id: customer._id,
 					key: addr._id,
-					image: 'https://picsum.photos/200/200',
+					image: customer.image || 'https://picsum.photos/200/200',
 					fullname: customer.firstname + ' ' + customer.lastname,
 					firstname: customer.firstname,
 					lastname: customer.lastname,
@@ -21,10 +22,10 @@ const index = async (req, res) => {
 			})
 		})
 
-		res.json(result);
+		res.status(200).json(result);
 	} catch (error) {
 		console.error(error.message);
-		res.status(500).json({ message: "Server Error" })
+		res.status(500).json({ message: error.message })
 	}
 }
 
@@ -32,22 +33,37 @@ const show = async (req, res) => {
 	try {
 		const data = await Customer.findById(req.params.id);
 
-		res.json(data);
+		res.status(200).json(data);
 	} catch (error) {
 		console.error(error.message);
-		res.status(500).json({ message: "Server Error" })
+		res.status(500).json({ message: error.message })
 	}
 }
 
 const store = async (req, res) => {
 	try {
-		const record = req.body;
+		let formRecord = req.body;
+		let record = {
+			prefix: formRecord.prefix,
+			firstname: formRecord.firstname,
+			lastname: formRecord.lastname,
+			phone: formRecord.phone,
+			image: formRecord.image,
+			addr: [{
+				description: formRecord.address,
+				tambon_name: formRecord.subdistrict,
+				amphur_name: formRecord.district,
+				province_name: formRecord.province,
+				post_code: formRecord.postcode
+			}]
+		}
 		const data = await Customer.create(record);
+		// console.log(req.body);
 
-		res.json(data);
+		res.status(200).json(data);
 	} catch (error) {
 		console.error(error.message);
-		res.status(500).json({ message: "Server Error" })
+		res.status(500).json({ message: error.message })
 	}
 }
 
@@ -56,21 +72,21 @@ const update = async (req, res) => {
 		const record = req.body;
 		const data = await Customer.findByIdAndUpdate(req.params.id, { $set: record });
 
-		res.json(data);
+		res.status(200).json(data);
 	} catch (error) {
 		console.error(error.message);
-		res.status(500).json({ message: "Server Error" })
+		res.status(500).json({ message: error.message })
 	}
 }
 
 const destroy = async (req, res) => {
 	try {
-		const data = await Customer.findByIdAndDeleted(req.params.id);
+		const data = await Customer.findByIdAndRemove(req.params.id);
 
-		res.json({ message: `${req.params.id} was delete successfully.` });
+		res.status(200).json({ success: true, message: `${req.params.id} was delete successfully.` });
 	} catch (error) {
 		console.error(error.message);
-		res.status(500).json({ message: "Server Error" })
+		res.status(500).json({ message: error.message })
 	}
 }
 
