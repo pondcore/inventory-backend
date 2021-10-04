@@ -10,9 +10,7 @@ const index = async (req, res) => {
 					id: customer._id,
 					key: addr._id,
 					image: customer.image || 'https://picsum.photos/200/200',
-					fullname: customer.firstname + ' ' + customer.lastname,
-					firstname: customer.firstname,
-					lastname: customer.lastname,
+					fullname: customer.prefix + ' ' + customer.firstname + ' ' + customer.lastname,
 					description: addr.description,
 					tambon_name: addr.tambon_name,
 					amphur_name: addr.amphur_name,
@@ -31,7 +29,7 @@ const index = async (req, res) => {
 
 const show = async (req, res) => {
 	try {
-		const data = await Customer.findById(req.params.id);
+		const data = await Customer.findOne({ "addr._id": req.params.id });
 
 		res.status(200).json(data);
 	} catch (error) {
@@ -42,8 +40,8 @@ const show = async (req, res) => {
 
 const store = async (req, res) => {
 	try {
-		let formRecord = req.body;
-		let record = {
+		const formRecord = req.body;
+		const record = {
 			prefix: formRecord.prefix,
 			firstname: formRecord.firstname,
 			lastname: formRecord.lastname,
@@ -69,10 +67,30 @@ const store = async (req, res) => {
 
 const update = async (req, res) => {
 	try {
-		const record = req.body;
-		const data = await Customer.findByIdAndUpdate(req.params.id, { $set: record });
+		const formRecord = req.body;
+		let customerDocument = await Customer.findOne({ "addr._id": req.params.id });
 
-		res.status(200).json(data);
+		customerDocument.prefix = formRecord.prefix;
+		customerDocument.firstname = formRecord.firstname;
+		customerDocument.lastname = formRecord.lastname;
+		customerDocument.phone = formRecord.phone;
+		customerDocument.image = formRecord.image;
+
+		customerDocument.addr.some((item, index) => {
+			if (item._id == formRecord.addrId) {
+				customerDocument.addr[index].description = formRecord.address
+				customerDocument.addr[index].tambon_name = formRecord.subdistrict
+				customerDocument.addr[index].amphur_name = formRecord.district
+				customerDocument.addr[index].province_name = formRecord.province
+				customerDocument.addr[index].post_code = formRecord.postcode
+				return true;
+			} else {
+				return false;
+			}
+		})
+		await customerDocument.save();
+
+		res.status(200).json({ success: true, message: `${req.params.id} was update successfully.` });
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json({ message: error.message })
@@ -81,7 +99,13 @@ const update = async (req, res) => {
 
 const destroy = async (req, res) => {
 	try {
-		const data = await Customer.findByIdAndRemove(req.params.id);
+		const data = await Customer.findOne({ "addr._id": req.params.id });
+		if (data.addr.length < 2) {
+			await data.remove();
+		} else {
+			data.addr.id(req.params.id).remove();
+			await data.save();
+		}
 
 		res.status(200).json({ success: true, message: `${req.params.id} was delete successfully.` });
 	} catch (error) {
