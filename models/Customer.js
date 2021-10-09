@@ -57,6 +57,8 @@ const customerSchema = new mongoose.Schema({
 		required: true
 	},
 	addr: [addrSchema]
+}, {
+	timestamps: true
 });
 
 const Customer = mongoose.model("customer", customerSchema);

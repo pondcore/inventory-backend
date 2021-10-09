@@ -2,12 +2,32 @@ const Product = require('../models/Product');
 
 const index = async (req, res) => {
 	try {
-		let data = await Product.find();
-		data.forEach((item, index) => {
-			data[index].image = item.image || 'https://picsum.photos/200/200'
-		})
+		const search = req.query.q;
+		const fields = req.query.field || {};
+		const limit = parseInt(req.query.pageSize || 10);
+		const page = parseInt(req.query.current || 1);
+		let query = null;
+		if (search != null) {
+			query = { "product_name": { $regex: `.*${search}.*` } };
+		}
 
-		res.status(200).json(data);
+		const data = await Product.find(query)
+			.select(fields)
+			.limit(limit)
+			.skip(limit * (page - 1))
+			.sort({ 'createdAt': -1 });
+
+		const totalProduct = await Product.countDocuments(query)
+
+		res.status(200).json({
+			success: true,
+			products: data,
+			pagination: {
+				current: page,
+				pageSize: limit
+			},
+			total: totalProduct
+		});
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json({ message: error.message })
@@ -31,7 +51,10 @@ const store = async (req, res) => {
 
 		const data = await Product.create(formRecord);
 
-		res.status(200).json(data);
+		res.status(200).json({
+			success: true,
+			message: "Order create successfully."
+		});
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json({ message: error.message })

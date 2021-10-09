@@ -2,25 +2,43 @@ const Customer = require('../models/Customer');
 
 const index = async (req, res) => {
 	try {
-		const data = await Customer.find();
-		let result = [];
-		data.forEach(customer => {
-			customer.addr.forEach((addr, index) => {
-				result.push({
-					id: customer._id,
-					key: addr._id,
-					image: customer.image || 'https://picsum.photos/200/200',
-					fullname: customer.prefix + ' ' + customer.firstname + ' ' + customer.lastname,
-					description: addr.description,
-					tambon_name: addr.tambon_name,
-					amphur_name: addr.amphur_name,
-					province_name: addr.province_name,
-					post_code: addr.post_code
-				})
-			})
-		})
+		const search = req.query.q;
+		const fields = req.query.field || {};
+		const limit = parseInt(req.query.limit || 10);
+		const page = parseInt(req.query.page || 1) - 1;
+		let query = null;
+		if (search != null) {
+			if (search.indexOf(' ') >= 0) {
+				let [fname, lname] = search.split(' ')
+				query = {
+					$and: [
+						{ "firstname": { $regex: `.*${fname}.*` } },
+						{ "lastname": { $regex: `.*${lname}.*` } },
+					]
+				};
+			} else {
+				query = {
+					$or: [
+						{ "firstname": { $regex: `.*${search}.*` } },
+						{ "lastname": { $regex: `.*${search}.*` } }
+					],
+				};
+			}
+		}
 
-		res.status(200).json(result);
+		const data = await Customer.find(query)
+			.select(fields)
+			.limit(limit)
+			.skip(limit * page)
+			.sort({ 'createdAt': -1 });
+
+		const totalCustomer = await Customer.countDocuments(query);
+
+		res.status(200).json({
+			success: true,
+			customers: data,
+			total: totalCustomer
+		});
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json({ message: error.message })
@@ -29,7 +47,7 @@ const index = async (req, res) => {
 
 const show = async (req, res) => {
 	try {
-		const data = await Customer.findOne({ "addr._id": req.params.id });
+		const data = await Customer.findById(req.params.id);
 
 		res.status(200).json(data);
 	} catch (error) {
