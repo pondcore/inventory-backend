@@ -27,6 +27,14 @@ app.use('/hello', (req, res) => {
     res.send("<h2>Hello World.</h2>");
 })
 
+const mongoose = require("mongoose");
+app.get('/drop/:name', (req, res) => {
+
+    mongoose.connection.db.dropCollection(req.params.name, function (err, result) {
+        res.send("<h2>Hello World.</h2>");
+    });
+})
+
 app.use('/api/customer', customerRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/user', userRoutes);
