@@ -99,9 +99,10 @@ const update = async (req, res) => {
 
 const destroy = async (req, res) => {
 	try {
-		const data = await Order.findByIdAndDeleted(req.params.id);
+		Order.findByIdAndRemove(req.params.id).then(() => {
+			res.status(200).json({ success: true, message: `${req.params.id} was delete successfully.` });
+		});
 
-		res.status(200).json({ message: `${req.params.id} was delete successfully.` });
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json({ success: false, message: error.message })
