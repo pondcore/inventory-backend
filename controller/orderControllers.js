@@ -36,7 +36,9 @@ const index = async (req, res) => {
 
 const show = async (req, res) => {
 	try {
-		const data = await Order.findById(req.params.id);
+		const data = await Order.findById(req.params.id)
+			.populate('customer_id',)
+			.populate('products.id');
 
 		res.status(200).json(data);
 	} catch (error) {
@@ -73,10 +75,22 @@ const store = async (req, res) => {
 
 const update = async (req, res) => {
 	try {
-		const record = req.body;
-		const data = await Order.findByIdAndUpdate(req.params.id, { $set: record });
+		const formRecord = req.body;
+		const record = {
+			customer_id: formRecord.customerId,
+			customer_addr_id: formRecord.addrId,
+			sender_id: '1',
+			products: formRecord.products,
+			total_cost: formRecord.totalCost,
+			total_weight: formRecord.totalWeight,
+			shipping_cost: formRecord.shippingCost,
+			total_price: formRecord.totalPrice,
+			payment_status: formRecord.isPaid === '1' ? 'paid' : 'pending',
+		}
+		Order.findByIdAndUpdate(req.params.id, record).then(() => {
+			res.status(200).json({ success: true, message: `${req.params.id} was update successfully.` });
+		});
 
-		res.status(200).json(data);
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json({ success: false, message: error.message })
@@ -85,9 +99,10 @@ const update = async (req, res) => {
 
 const destroy = async (req, res) => {
 	try {
-		const data = await Order.findByIdAndDeleted(req.params.id);
+		Order.findByIdAndRemove(req.params.id).then(() => {
+			res.status(200).json({ success: true, message: `${req.params.id} was delete successfully.` });
+		});
 
-		res.status(200).json({ message: `${req.params.id} was delete successfully.` });
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json({ success: false, message: error.message })
