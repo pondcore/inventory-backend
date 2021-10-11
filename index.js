@@ -39,6 +39,9 @@ app.use('/api/customer', customerRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/order', orderRoutes);
+const dashboardController = require('./controller/dashboardControllers');
+
+app.use('/api/summary', dashboardController.summary);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`)
