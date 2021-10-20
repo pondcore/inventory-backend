@@ -48,14 +48,20 @@ const summary = async (req, res) => {
         res.status(200).json({
             todaySummary: sumPriceDay,
             todayProfit: sumProfitDay,
+            // รายวัน
             productAmountToday,
+
 
             weekSummary: sumPriceWeek,
             weekProfit: sumProfitWeek,
+            // รายสัปห์ดา
             productAmountWeek,
+
 
             monthSummary: sumPriceMonth,
             monthProfit: sumProfitMonth,
+             
+            // รายเดือน
             productAmountMonth,
         });
 
