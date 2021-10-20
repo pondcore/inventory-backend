@@ -2,56 +2,61 @@
 const Order = require('../models/Order');
 const dayjs = require('dayjs')
 
+async function orderQueryByTime(filterTime) {
+    return await Order.find({
+        createdAt: {
+            $gte: dayjs().startOf(filterTime),
+            $lt: dayjs().endOf(filterTime)
+        },
+        payment_status: 'paid'
+    }, 'total_price total_cost shipping_cost products');
+}
+
+function mapProduct(orderArray) {
+    let prodList = {};
+    orderArray.forEach(order => {
+        order.products.forEach(prod => {
+            if (prodList.hasOwnProperty(prod.id)) {
+                prodList[prod.id] += prod.amount;
+            } else {
+                prodList[prod.id] = prod.amount;
+
+            }
+        })
+    })
+    return prodList;
+}
 
 const summary = async (req, res) => {
     try {
-        const today = await Order.find({ //query today up to tonight
-            createdAt: {
-                $gte: dayjs().startOf('day'),
-                $lt: dayjs().endOf('day')
-            },
-            payment_status: 'paid'
-        }, 'total_price total_cost shipping_cost products');
+        const today = await orderQueryByTime('day');
         let sumPriceDay = today.reduce((acc, cur) => acc + cur.total_price, 0);
         let sumProfitDay = today.reduce((acc, cur) => acc + cur.total_price - cur.total_cost - cur.shipping_cost, 0);
-        let sumAmountDay = today.reduce((acc, cur) =>acc + cur.amount)
+        let productAmountToday = mapProduct(today);
 
-        const thisWeek = await Order.find({ //query today up to tonight
-            createdAt: {
-                $gte: dayjs().startOf('week'),
-                $lt: dayjs().endOf('week')
-            },
-            payment_status: 'paid'
-        }, 'total_price total_cost shipping_cost products');
+
+        const thisWeek = await orderQueryByTime('week');
         let sumPriceWeek = thisWeek.reduce((acc, cur) => acc + cur.total_price, 0);
         let sumProfitWeek = thisWeek.reduce((acc, cur) => acc + cur.total_price - cur.total_cost - cur.shipping_cost, 0);
-       let sumAmoumtWeek = thisWeek.reduce((acc, cur) => acc + cur.amount, 0);
-        const thisMonth = await Order.find({ //query today up to tonight
-            createdAt: {
-                $gte: dayjs().startOf('month'),
-                $lt: dayjs().endOf('month')
-            },
-            payment_status: 'paid'
-        }, 'total_price total_cost shipping_cost products');
+        let productAmountWeek = mapProduct(thisWeek);
+
+        const thisMonth = await orderQueryByTime('month');
         let sumPriceMonth = thisMonth.reduce((acc, cur) => acc + cur.total_price, 0);
         let sumProfitMonth = thisMonth.reduce((acc, cur) => acc + cur.total_price - cur.total_cost - cur.shipping_cost, 0);
-        let sumAmountMouth = thisMonth.reduce((acc, cur) => acc + cur.amount, 0)
-        
+        let productAmountMonth = mapProduct(thisMonth);
+
         res.status(200).json({
             todaySummary: sumPriceDay,
             todayProfit: sumProfitDay,
-            todayAmount: sumAmountDay
+            productAmountToday,
 
             weekSummary: sumPriceWeek,
             weekProfit: sumProfitWeek,
-            weekAmount:  sumAmoumtWeek,
-            
+            productAmountWeek,
+
             monthSummary: sumPriceMonth,
             monthProfit: sumProfitMonth,
-            monthAmount: sumAmountMouth,
-            
-           
-        
+            productAmountMonth,
         });
 
     } catch (error) {
