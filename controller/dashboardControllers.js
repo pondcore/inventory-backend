@@ -60,7 +60,7 @@ const summary = async (req, res) => {
 
             monthSummary: sumPriceMonth,
             monthProfit: sumProfitMonth,
-             
+
             // รายเดือน
             productAmountMonth,
         });
@@ -70,7 +70,6 @@ const summary = async (req, res) => {
         res.status(500).json({ success: false, message: error.message })
     }
 }
-
 
 module.exports = {
     summary
